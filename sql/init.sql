@@ -1,2 +1,9 @@
--- Initial PostgreSQL bootstrap script.
--- Replace this file with the real schema once the resource domain is defined.
+CREATE TABLE resources (
+    id SERIAL PRIMARY KEY,
+    campo1 VARCHAR NOT NULL,
+    campo2 VARCHAR NOT NULL,
+    campo3 VARCHAR NOT NULL,
+    campo4 INTEGER NOT NULL,
+    campo5 DECIMAL NOT NULL,
+    campo6 BOOLEAN NOT NULL
+);
