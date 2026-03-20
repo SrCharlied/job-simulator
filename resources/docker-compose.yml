@@ -1,0 +1,52 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: resources/Dockerfile.php
+    container_name: ${APP_NAME:-job-simulator}-app
+    env_file:
+      - .env
+    working_dir: /app
+    volumes:
+      - ..:/app
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: ${APP_NAME:-job-simulator}-db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME:-job_simulator}
+      POSTGRES_USER: ${DB_USER:-job_simulator}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-job_simulator_secret}
+    ports:
+      - "${DB_FORWARD_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U ${DB_USER:-job_simulator} -d ${DB_NAME:-job_simulator}
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    networks:
+      - backend
+    restart: unless-stopped
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres_data:

@@ -1,0 +1,2 @@
+-- Initial PostgreSQL bootstrap script.
+-- Replace this file with the real schema once the resource domain is defined.
