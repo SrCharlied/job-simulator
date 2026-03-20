@@ -64,12 +64,12 @@ class ResourceController
                 default:
                     $this->respond(['error' => 'Method not allowed.'], 405);
             }
+        } catch (PDOException) {
+            $this->respond(['error' => 'Database operation failed.'], 500);
         } catch (InvalidArgumentException $exception) {
             $this->respond(['error' => $exception->getMessage()], 400);
         } catch (RuntimeException $exception) {
             $this->respond(['error' => $exception->getMessage()], 422);
-        } catch (PDOException) {
-            $this->respond(['error' => 'Database operation failed.'], 500);
         }
     }
 

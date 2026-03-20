@@ -57,7 +57,7 @@ class Resource
              RETURNING id, campo1, campo2, campo3, campo4, campo5, campo6"
         );
 
-        $statement->execute($this->bindableData($data));
+        $this->executeStatement($statement, $this->bindableData($data));
 
         return $this->mapRow($statement->fetch());
     }
@@ -76,7 +76,7 @@ class Resource
              RETURNING id, campo1, campo2, campo3, campo4, campo5, campo6"
         );
 
-        $statement->execute($this->bindableData($data, $id));
+        $this->executeStatement($statement, $this->bindableData($data, $id));
         $row = $statement->fetch();
 
         return $row === false ? null : $this->mapRow($row);
@@ -112,7 +112,7 @@ class Resource
             )
         );
 
-        $statement->execute($params);
+        $this->executeStatement($statement, $params);
         $row = $statement->fetch();
 
         return $row === false ? null : $this->mapRow($row);
@@ -142,6 +142,25 @@ class Resource
         }
 
         return $payload;
+    }
+
+    private function executeStatement(PDOStatement $statement, array $params): void
+    {
+        foreach ($params as $key => $value) {
+            $statement->bindValue(':' . $key, $value, $this->pdoTypeFor($value));
+        }
+
+        $statement->execute();
+    }
+
+    private function pdoTypeFor(mixed $value): int
+    {
+        return match (true) {
+            is_int($value) => PDO::PARAM_INT,
+            is_bool($value) => PDO::PARAM_BOOL,
+            $value === null => PDO::PARAM_NULL,
+            default => PDO::PARAM_STR,
+        };
     }
 
     private function mapRow(array $row): array

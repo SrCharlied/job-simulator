@@ -1,4 +1,4 @@
-CREATE TABLE resources (
+CREATE TABLE IF NOT EXISTS resources (
     id SERIAL PRIMARY KEY,
     campo1 VARCHAR NOT NULL,
     campo2 VARCHAR NOT NULL,
