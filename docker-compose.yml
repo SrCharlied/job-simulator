@@ -4,9 +4,16 @@ services:
       context: .
       dockerfile: Dockerfile.php
     container_name: ${APP_NAME:-job-simulator}-app
-    env_file:
-      - .env
     working_dir: /app
+    environment:
+      APP_NAME: ${APP_NAME:-job-simulator}
+      APP_ENV: ${APP_ENV:-local}
+      DB_CONNECTION: ${DB_CONNECTION:-pgsql}
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-job_simulator}
+      DB_USER: ${DB_USER:-job_simulator}
+      DB_PASSWORD: ${DB_PASSWORD:-job_simulator_secret}
     volumes:
       - .:/app
     ports:
@@ -21,8 +28,6 @@ services:
   db:
     image: postgres:16-alpine
     container_name: ${APP_NAME:-job-simulator}-db
-    env_file:
-      - .env
     environment:
       POSTGRES_DB: ${DB_NAME:-job_simulator}
       POSTGRES_USER: ${DB_USER:-job_simulator}
@@ -35,7 +40,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - pg_isready -U ${DB_USER:-job_simulator} -d ${DB_NAME:-job_simulator}
+        - pg_isready -U ${POSTGRES_USER:-${DB_USER:-job_simulator}} -d ${POSTGRES_DB:-${DB_NAME:-job_simulator}}
       interval: 5s
       timeout: 5s
       retries: 10
