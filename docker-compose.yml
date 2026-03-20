@@ -1,14 +1,14 @@
 services:
   app:
     build:
-      context: ..
-      dockerfile: resources/Dockerfile.php
+      context: .
+      dockerfile: Dockerfile.php
     container_name: ${APP_NAME:-job-simulator}-app
     env_file:
       - .env
     working_dir: /app
     volumes:
-      - ..:/app
+      - .:/app
     ports:
       - "${APP_PORT:-8000}:8000"
     depends_on:
